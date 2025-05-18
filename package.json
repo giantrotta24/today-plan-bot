@@ -1,0 +1,17 @@
+{
+  "name": "today-plan-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.5.0",
+    "node-ical": "^0.20.1"
+  }
+}
