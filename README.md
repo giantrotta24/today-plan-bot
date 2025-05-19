@@ -9,15 +9,16 @@ Today Plan Bot fetches events from your personal and family calendars, filters o
 ## Features
 
 - Fetches events from multiple calendar sources (iCal URLs)
-- Filters out routine activities like meals and sleep times (hardcoded for now)
+- Filters out routine activities like meals and sleep times
 - Sorts events chronologically
 - Formats a clean, easy-to-read daily plan
-- Delivers the plan via Telegram (planned feature)
+- Delivers the plan via Telegram messaging
+- Runs automatically daily via cron job
 
 ## Requirements
 
 - Node.js (v14 or higher recommended)
-- Telegram Bot API token (for the planned Telegram integration)
+- Telegram Bot API token (create one via [@BotFather](https://t.me/botfather))
 - Calendar URLs in iCal format (.ics)
 
 ## Installation
@@ -37,9 +38,15 @@ Today Plan Bot fetches events from your personal and family calendars, filters o
    ```
    PERSONAL_ICS_URL=https://calendar.google.com/calendar/ical/your_personal_calendar_url/basic.ics
    FAMILY_ICS_URL=https://calendar.google.com/calendar/ical/your_family_calendar_url/basic.ics
-   TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+   TELEGRAM_TOKEN=your_telegram_bot_token
    TELEGRAM_CHAT_ID=your_telegram_chat_id
    ```
+
+4. Get your Telegram Chat ID:
+   - Start a chat with your bot
+   - Send a message to your bot
+   - Visit `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates`
+   - Look for the `"chat":{"id":123456789}` value in the response
 
 ## Usage
 
@@ -49,13 +56,43 @@ To run the bot manually:
 npm start
 ```
 
-For production use, you'll want to set up a scheduled task (cron job) to run the bot at a specific time each day, for example:
+### Setting Up Automated Daily Updates
+
+#### Create a Shell Script
+
+Create a file named `run-today-plan.sh` in your project directory:
+
+```bash
+#!/bin/bash
+cd /path/to/today-plan-bot
+/usr/bin/node index.js >> /path/to/today-plan-bot/logs/bot.log 2>&1
+```
+
+Make it executable:
 
 ```
-0 7 * * * cd /path/to/today-plan-bot && npm start
+chmod +x run-today-plan.sh
 ```
 
-This would run the bot every day at 7:00 AM.
+#### Set Up a Cron Job
+
+Edit your crontab:
+
+```
+crontab -e
+```
+
+Add a line to run the bot at your desired time (e.g., 7:00 AM daily):
+
+```
+0 7 * * * /path/to/today-plan-bot/run-today-plan.sh
+```
+
+For a friendly morning reminder at 7 AM and an evening reminder at 6 PM:
+
+```
+0 7,18 * * * /path/to/today-plan-bot/run-today-plan.sh
+```
 
 ## Customization
 
@@ -72,14 +109,36 @@ const EXCLUDED_EVENTS = [
 ];
 ```
 
+## Telegram Message Format
+
+The bot formats your daily plan with emojis and clear timing:
+
+```
+📆 *Today's Plan* (Tuesday, Jun 4)
+
+🕒 9:00 AM – Team Meeting
+🕒 12:30 PM – Lunch with Client
+🕒 3:00 PM – Project Review
+```
+
+Events with descriptions will show the first 100 characters of the description.
+
+## Troubleshooting
+
+- **Bot not sending messages**: Verify your TELEGRAM_TOKEN and TELEGRAM_CHAT_ID
+- **Missing events**: Check your calendar URLs and ensure they're accessible
+- **Cron job not running**: Check your logs at `/path/to/today-plan-bot/logs/bot.log`
+
 ## Roadmap
 
 - [x] Fetch and parse calendar events
 - [x] Filter routine events
 - [x] Format daily plan
-- [ ] Integrate with Telegram API
-- [ ] Add automated daily scheduling
-- [ ] Support for event location and details
+- [x] Integrate with Telegram API
+- [x] Add automated daily scheduling
+- [x] Support for event descriptions
+- [ ] Categorize events for better structured message
+- [ ] Support for event locations
 - [ ] Interactive commands for the bot
 
 ## License
@@ -96,3 +155,4 @@ This project uses:
 - [node-ical](https://github.com/jens-maus/node-ical) for parsing iCal data
 - [dayjs](https://day.js.org/) for date formatting and manipulation
 - [dotenv](https://github.com/motdotla/dotenv) for environment variable management
+- [node-telegram-bot-api](https://github.com/yagop/node-telegram-bot-api) for Telegram integration
