@@ -13,7 +13,10 @@ Today Plan Bot fetches events from your personal and family calendars, filters o
 - Sorts events chronologically
 - Formats a clean, easy-to-read daily plan
 - Delivers the plan via Telegram messaging
-- Runs automatically daily via cron job
+- Runs automatically daily via GitHub Actions
+- Configurable timezone support
+- Robust error handling and logging
+- Environment variable validation
 
 ## Requirements
 
@@ -40,6 +43,7 @@ Today Plan Bot fetches events from your personal and family calendars, filters o
    FAMILY_ICS_URL=https://calendar.google.com/calendar/ical/your_family_calendar_url/basic.ics
    TELEGRAM_TOKEN=your_telegram_bot_token
    TELEGRAM_CHAT_ID=your_telegram_chat_id
+   TIMEZONE=America/New_York  # Optional, defaults to America/New_York
    ```
 
 4. Get your Telegram Chat ID:
@@ -143,7 +147,9 @@ Events with descriptions will show the first 100 characters of the description.
 
 - **Bot not sending messages**: Verify your TELEGRAM_TOKEN and TELEGRAM_CHAT_ID
 - **Missing events**: Check your calendar URLs and ensure they're accessible
+- **Timezone issues**: Verify your TIMEZONE setting matches your calendar's timezone
 - **Cron job not running**: Check your logs at `/path/to/today-plan-bot/logs/bot.log`
+- **Environment variables**: The bot will exit with an error if any required environment variables are missing
 
 ## Roadmap
 
