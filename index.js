@@ -1,7 +1,12 @@
+const TelegramBot = require("node-telegram-bot-api");
 const ical = require("node-ical");
 const dayjs = require("dayjs");
-const TelegramBot = require("node-telegram-bot-api");
+const utc = require("dayjs/plugin/utc");
+const tz = require("dayjs/plugin/timezone");
+dayjs.extend(utc);
+dayjs.extend(tz);
 
+const TIMEZONE = process.env.TIMEZONE || "America/New_York";
 const PERSONAL_ICS_URL = process.env.PERSONAL_ICS_URL;
 const FAMILY_ICS_URL = process.env.FAMILY_ICS_URL;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
@@ -36,11 +41,11 @@ function checkEnvVars() {
 async function getTodaysEvents(calendarUrl) {
   try {
     const events = await ical.async.fromURL(calendarUrl);
-    const today = dayjs().format("YYYY-MM-DD");
+    const today = dayjs().tz(TIMEZONE).format("YYYY-MM-DD");
 
     return Object.values(events).filter((e) => {
       if (!e.start || !e.summary) return false;
-      const eventDate = dayjs(e.start).format("YYYY-MM-DD");
+      const eventDate = dayjs(e.start).tz(TIMEZONE).format("YYYY-MM-DD");
       return eventDate === today && !EXCLUDED_EVENTS.includes(e.summary);
     });
   } catch (error) {
@@ -52,9 +57,11 @@ async function getTodaysEvents(calendarUrl) {
 function formatPlan(events) {
   if (events.length === 0)
     return "✅ No events today. Free space to plan or rest.";
-  let msg = `📆 *Today’s Plan* (${dayjs().format("dddd, MMM D")})\n`;
+  let msg = `📆 *Today’s Plan* (${dayjs()
+    .tz(TIMEZONE)
+    .format("dddd, MMM D")})\n`;
   for (const e of events) {
-    const time = dayjs(e.start).format("h:mm A");
+    const time = dayjs(e.start).tz(TIMEZONE).format("h:mm A");
     msg += `\n🕒 ${time} – ${e.summary}`;
     if (e.description) {
       msg += `\n   ${e.description.substring(0, 100)}${
@@ -86,13 +93,16 @@ async function main() {
   checkEnvVars();
 
   const familyCalEvents = await getTodaysEvents(FAMILY_ICS_URL);
+  console.log("🔍 Found", familyCalEvents.length, "family calendar events");
   const personalCalEvents = await getTodaysEvents(PERSONAL_ICS_URL);
+  console.log("🔍 Found", personalCalEvents.length, "personal calendar events");
 
   const sortedEvents = sortEvents([...familyCalEvents, ...personalCalEvents]);
 
   const plan = formatPlan(sortedEvents);
+  console.log("🔍 Sending Telegram message");
   await sendTelegramMessage(plan);
-  console.log("✅ Done");
+  console.log("Job done");
 }
 
 main();
