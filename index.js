@@ -31,7 +31,7 @@ async function getTodaysEvents(calendarUrl) {
     });
   } catch (error) {
     console.error("failed to get calendar events", error);
-    return [];
+    process.exit(1);
   }
 }
 
@@ -64,6 +64,7 @@ async function sendTelegramMessage(message) {
     console.log("✅ Sent today’s plan to Telegram.");
   } catch (err) {
     console.error("❌ Failed to send Telegram message", err);
+    process.exit(1);
   }
 }
 
@@ -75,6 +76,7 @@ async function main() {
 
   const plan = formatPlan(sortedEvents);
   await sendTelegramMessage(plan);
+  console.log("✅ Done");
 }
 
 main();
