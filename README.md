@@ -58,7 +58,25 @@ npm start
 
 ### Setting Up Automated Daily Updates
 
-#### Create a Shell Script
+#### Option 1: GitHub Actions (Recommended)
+
+This project includes a GitHub Actions workflow that automatically runs the bot daily. The workflow is configured to run at 9:17 AM Eastern Time (13:17 UTC).
+
+To set up:
+
+1. Go to your GitHub repository settings
+2. Navigate to "Secrets and variables" → "Actions"
+3. Add the following repository secrets:
+   - `PERSONAL_ICS_URL`: Your personal calendar iCal URL
+   - `FAMILY_ICS_URL`: Your family calendar iCal URL
+   - `TELEGRAM_TOKEN`: Your Telegram bot token
+   - `TELEGRAM_CHAT_ID`: Your Telegram chat ID
+
+The workflow will automatically run daily and can also be triggered manually from the "Actions" tab in your repository.
+
+#### Option 2: Local Cron Job
+
+> **Important Limitation**: The local cron job approach requires your computer to be powered on and logged in at the scheduled time. This makes it less reliable for daily automation unless you have a dedicated machine that's always running.
 
 Create a file named `run-today-plan.sh` in your project directory:
 
@@ -73,8 +91,6 @@ Make it executable:
 ```
 chmod +x run-today-plan.sh
 ```
-
-#### Set Up a Cron Job
 
 Edit your crontab:
 
