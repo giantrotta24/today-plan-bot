@@ -1,4 +1,3 @@
-require("dotenv").config();
 const ical = require("node-ical");
 const dayjs = require("dayjs");
 const TelegramBot = require("node-telegram-bot-api");
@@ -18,6 +17,21 @@ const EXCLUDED_EVENTS = [
   "Luci bed time",
   "Bed",
 ];
+
+function checkEnvVars() {
+  const required = [
+    "PERSONAL_ICS_URL",
+    "FAMILY_ICS_URL",
+    "TELEGRAM_TOKEN",
+    "TELEGRAM_CHAT_ID",
+  ];
+  for (const varName of required) {
+    if (!process.env[varName]) {
+      console.error(`❌ Missing required environment variable: ${varName}`);
+      process.exit(1);
+    }
+  }
+}
 
 async function getTodaysEvents(calendarUrl) {
   try {
@@ -69,6 +83,8 @@ async function sendTelegramMessage(message) {
 }
 
 async function main() {
+  checkEnvVars();
+
   const familyCalEvents = await getTodaysEvents(FAMILY_ICS_URL);
   const personalCalEvents = await getTodaysEvents(PERSONAL_ICS_URL);
 
