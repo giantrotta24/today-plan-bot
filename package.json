@@ -7,7 +7,7 @@
     "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Gianfranco Trotta",
   "license": "ISC",
   "dependencies": {
     "dayjs": "^1.11.13",
