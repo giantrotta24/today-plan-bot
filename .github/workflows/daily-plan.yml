@@ -2,7 +2,7 @@ name: Daily Telegram Planner
 
 on:
   schedule:
-    - cron: "17 13 * * *" # 9:17AM Eastern (cron is in UTC)
+    - cron: "55 10 * * *" # 6:55AM Eastern (cron is in UTC)
   workflow_dispatch: # allows manual runs too
 
 jobs:
