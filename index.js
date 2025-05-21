@@ -9,6 +9,7 @@ dayjs.extend(tz);
 const TIMEZONE = process.env.TIMEZONE || "America/New_York";
 const PERSONAL_ICS_URL = process.env.PERSONAL_ICS_URL;
 const FAMILY_ICS_URL = process.env.FAMILY_ICS_URL;
+const WORK_ICS_URL = process.env.WORK_ICS_URL;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
@@ -21,12 +22,14 @@ const EXCLUDED_EVENTS = [
   "RVshare Hours",
   "Luci bed time",
   "Bed",
+  "Daily Check Out",
 ];
 
 function checkEnvVars() {
   const required = [
     "PERSONAL_ICS_URL",
     "FAMILY_ICS_URL",
+    "WORK_ICS_URL",
     "TELEGRAM_TOKEN",
     "TELEGRAM_CHAT_ID",
   ];
@@ -96,8 +99,14 @@ async function main() {
   console.log("🔍 Found", familyCalEvents.length, "family calendar events");
   const personalCalEvents = await getTodaysEvents(PERSONAL_ICS_URL);
   console.log("🔍 Found", personalCalEvents.length, "personal calendar events");
+  const workCalEvents = await getTodaysEvents(WORK_ICS_URL);
+  console.log("🔍 Found", workCalEvents.length, "work calendar events");
 
-  const sortedEvents = sortEvents([...familyCalEvents, ...personalCalEvents]);
+  const sortedEvents = sortEvents([
+    ...familyCalEvents,
+    ...personalCalEvents,
+    ...workCalEvents,
+  ]);
 
   const plan = formatPlan(sortedEvents);
   console.log("🔍 Sending Telegram message");
