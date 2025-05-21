@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const TelegramBot = require("node-telegram-bot-api");
 const ical = require("node-ical");
 const dayjs = require("dayjs");
